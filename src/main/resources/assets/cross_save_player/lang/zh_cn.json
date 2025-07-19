@@ -1,0 +1,7 @@
+{
+    "cross_save_player.configuration.maintainPosition": "保持坐标",
+    "cross_save_player.configuration.maintainPosition.tooltip": "重新回到游戏内时，保持玩家的坐标",
+    "cross_save_player.configuration.title": "跨存档玩家",
+    "cross_save_player.configuration.section.cross.save.player.client.toml.title": "客户端配置",
+    "cross_save_player.configuration.section.cross.save.player.client.toml": "客户端"
+}

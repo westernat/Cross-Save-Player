@@ -1,0 +1,7 @@
+{
+    "cross_save_player.configuration.maintainPosition": "Maintain Position",
+    "cross_save_player.configuration.maintainPosition.tooltip": "When returning to the game, maintain the player's position",
+    "cross_save_player.configuration.title": "Cross Save Player",
+    "cross_save_player.configuration.section.cross.save.player.client.toml.title": "Client Configs",
+    "cross_save_player.configuration.section.cross.save.player.client.toml": "Client"
+}

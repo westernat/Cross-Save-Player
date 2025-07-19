@@ -4,11 +4,9 @@ import net.minecraft.Util;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtAccounter;
 import net.minecraft.nbt.NbtIo;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.storage.FileNameDateFormatter;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.loading.FMLPaths;
@@ -29,29 +27,18 @@ public final class CrossSavePlayerDataStorage {
 
     @SubscribeEvent
     public static void player$SaveToFile(PlayerEvent.SaveToFile event) {
-        try {
-            CompoundTag tag = event.getEntity().saveWithoutId(new CompoundTag());
-            playerDir.mkdirs();
-            Path path = playerDir.toPath();
-            Path path1 = Files.createTempFile(path, event.getPlayerUUID() + "-", ".dat");
-            NbtIo.writeCompressed(tag, path1);
-            Path path2 = path.resolve(event.getPlayerUUID() + ".dat");
-            Path path3 = path.resolve(event.getPlayerUUID() + ".dat_old");
-            Util.safeReplaceFile(path2, path1, path3);
-        } catch (Exception exception) {
-            CrossSavePlayer.LOGGER.warn("Failed to save player data for {}", event.getEntity().getName().getString());
-        }
-    }
-
-    @SubscribeEvent
-    public static void player$LoggedIn(PlayerEvent.PlayerLoggedInEvent event) {
-        if (!Configs.MAINTAIN_POSITION.get() && event.getEntity() instanceof ServerPlayer player) {
-            ServerLevel overworld = player.server.overworld();
-            Vec3 position = player.adjustSpawnLocation(overworld, overworld.getSharedSpawnPos()).getBottomCenter();
-            if (player.serverLevel().dimension() == overworld.dimension()) {
-                player.moveTo(position.x, position.y, position.z);
-            } else {
-                player.teleportTo(overworld, position.x, position.y, position.z, 0, 0);
+        if (event.getEntity() instanceof ServerPlayer player && player.server.isSingleplayerOwner(player.getGameProfile())) {
+            try {
+                CompoundTag tag = player.saveWithoutId(new CompoundTag());
+                playerDir.mkdirs();
+                Path path = playerDir.toPath();
+                Path path1 = Files.createTempFile(path, event.getPlayerUUID() + "-", ".dat");
+                NbtIo.writeCompressed(tag, path1);
+                Path path2 = path.resolve(event.getPlayerUUID() + ".dat");
+                Path path3 = path.resolve(event.getPlayerUUID() + ".dat_old");
+                Util.safeReplaceFile(path2, path1, path3);
+            } catch (Exception exception) {
+                CrossSavePlayer.LOGGER.warn("Failed to save player data for {}", player.getName().getString());
             }
         }
     }
